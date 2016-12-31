@@ -11,7 +11,7 @@ var MongoClient = mongo.MongoClient
 var app = express()
 
 
-var mongoUrl = 'mongodb://localhost:27017/imagesearch'
+var mongoUrl = process.env['MONGO_URI']
 
 function insertSearchToDB (search) {
   MongoClient.connect(mongoUrl, function (err, db) {
