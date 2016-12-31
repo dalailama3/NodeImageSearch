@@ -98,6 +98,11 @@ app.get('/api/imagesearch/:search', function (req,response) {
     });
 
   });
+
+  req.on('error', (e) => {
+    console.log(e)
+  });
+
   insertSearchToDB(search)
   req.end();
 
