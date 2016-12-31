@@ -1,10 +1,38 @@
 var express = require('express')
 var https = require('https')
 var http = require('http')
-var API_KEY = 'AIzaSyDRwhq1mt9KyLBySU_66k6f4s4W8Ohy-s8'
-var SEARCH_ID = '015375743846369420198:cnraqfuetko'
+var API_KEY = process.env['API_KEY']
+var SEARCH_ID = process.env['SEARCH_ID']
+
+var mongo = require('mongodb')
+var MongoClient = mongo.MongoClient
+
 
 var app = express()
+
+
+var mongoUrl = 'mongodb://localhost:27017/imagesearch'
+
+function insertSearchToDB (search) {
+  MongoClient.connect(mongoUrl, function (err, db) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log("Connected to db server")
+      var collection = db.collection('lastSearches')
+
+      collection.insert({
+        "search": search,
+        "created_at": new Date()
+      })
+
+      db.close()
+
+    }
+  })
+}
+
+
 
 app.get('/', function (req,res) {
   res.send("Welcome to the Image Search App. Add /api/imagesearch/[your search] to the url to see results.")
@@ -39,6 +67,7 @@ app.get('/api/imagesearch/:search', function (req,response) {
     });
 
   });
+  insertSearchToDB(search)
   req.end();
 
 
