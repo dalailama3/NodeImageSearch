@@ -107,7 +107,8 @@ app.get('/api/imagesearch/:search', function (req,response) {
 app.get('/api/latest/imagesearch', function (req,res) {
 
   returnLastSearchesCollection([], (arr) => {
-    res.send(arr)
+    var copy = arr.slice()
+    res.send(copy.reverse())
   })
 })
 
