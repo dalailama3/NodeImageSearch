@@ -60,17 +60,23 @@ function returnLastSearchesCollection(arr, cb) {
 
 
 app.get('/', function (req,res) {
-  res.send("Welcome to the Image Search App. Add /api/imagesearch/[your search] to the url to see results.")
+  var message = "Welcome to the Image Search App. Add /api/imagesearch/[your search] to the url to see results.\nAppend /api/latest/imagesearch to see the last searches made."
+  message += "\nAppend /?offset=[offset] to your search to paginate through results."
+  res.send(message)
 })
 
 app.get('/api/imagesearch/:search', function (req,response) {
   var results = []
   var images = [];
   var search = req.params.search
-  var offset = req.query.offset || 0
+  var offset = req.query.offset
 
 
-  var url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ID}&q=${search}&searchType=image&fileType=jpg&imgSize=medium&num=2`
+  var url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ID}&q=${search}&searchType=image&fileType=jpg&imgSize=medium&num=10`
+
+  if (offset >= 1 && offset <= 101) {
+    url = url + '&start=' + offset
+  }
   var req = https.request(url, (res) => {
     res.on('data', (chunk) => {
       images.push(chunk)
