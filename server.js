@@ -16,7 +16,8 @@ var mongoUrl = 'mongodb://localhost:27017/imagesearch'
 function insertSearchToDB (search) {
   MongoClient.connect(mongoUrl, function (err, db) {
     if (err) {
-      console.log(err)
+      console.log("Could not connect to db")
+      throw err
     } else {
       console.log("Connected to db server")
       var collection = db.collection('lastSearches')
@@ -28,6 +29,30 @@ function insertSearchToDB (search) {
 
       db.close()
 
+    }
+  })
+}
+
+function returnLastSearchesCollection(arr, cb) {
+
+  MongoClient.connect(mongoUrl, function (err, db) {
+    if (err) {
+      console.log("Could not connect to db")
+      throw err
+    } else {
+      console.log("Connected to db server")
+      var collection = db.collection('lastSearches')
+      collection.find({}).toArray(function(err, docs) {
+        if (err) {
+          console.log(err)
+        } else {
+          arr = docs
+          console.log(arr)
+          cb(arr)
+        }
+      })
+
+      db.close()
     }
   })
 }
@@ -71,6 +96,13 @@ app.get('/api/imagesearch/:search', function (req,response) {
   req.end();
 
 
+})
+
+app.get('/api/latest/imagesearch', function (req,res) {
+
+  returnLastSearchesCollection([], (arr) => {
+    res.send(arr)
+  })
 })
 
 app.listen(3000)
